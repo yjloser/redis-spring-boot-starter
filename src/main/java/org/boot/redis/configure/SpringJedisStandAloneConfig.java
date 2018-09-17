@@ -1,8 +1,7 @@
 package org.boot.redis.configure;
 
 import lombok.Data;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.boot.redis.core.SpringJedisProperties;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
@@ -16,9 +15,8 @@ import redis.clients.jedis.JedisPoolConfig;
  * @create: 2018-09-17 23:30
  **/
 @Data
+@Slf4j
 public class SpringJedisStandAloneConfig extends JedisPoolConfig {
-
-    private static Logger logger = LogManager.getLogger(SpringJedisStandAloneConfig.class);
 
     /**
      * 默认数据库
@@ -57,7 +55,7 @@ public class SpringJedisStandAloneConfig extends JedisPoolConfig {
         //截取多个主机地址
         String[] hostArray = StringUtils.tokenizeToStringArray(properties.getHost(), CONFIG_LOCATION_DELIMITERS);
         try {
-            logger.info("------------- redis pool init start------------- ");
+            log.info("------------- redis pool init start------------- ");
             JedisPoolConfig config = new JedisPoolConfig();
             // 设置池配置项值
             config.setMaxTotal(properties.getMaxTotal());
@@ -72,12 +70,12 @@ public class SpringJedisStandAloneConfig extends JedisPoolConfig {
             }
             boolean connected = isConnected();
             if (!connected) {
-                logger.error("redis 初始化出错 缓存服务器连接不上！");
+                log.error("redis 初始化出错 缓存服务器连接不上！");
                 throw new Exception("IP:" + hostArray[0] + ", redis服务器不可以连接~~~，请检查配置redis服务器");
             }
-            logger.info("------------- redis pool init end------------- ");
+            log.info("------------- redis pool init end------------- ");
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             throw new Error("IP:" + hostArray[0] + ",redis服务器不可以连接~~~，请检查配置redis服务器", e);
         }
     }

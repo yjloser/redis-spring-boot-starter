@@ -5,9 +5,11 @@ import org.boot.redis.core.SpringJedisProperties;
 import org.boot.redis.core.SpringJedisStandAloneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,11 +38,10 @@ public class SpringJedisAutoConfigure {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(name = "spring.jedis.stand.alone.enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnJava(value = JavaVersion.EIGHT,range= ConditionalOnJava.Range.EQUAL_OR_NEWER)
     SpringJedisStandAloneService standAloneService() {
-        //进行jedis配置
-        SpringJedisStandAloneConfig configPool = new SpringJedisStandAloneConfig(properties);
         //放入连接池
-        return new SpringJedisStandAloneService(configPool.getJedisPool());
+        return new SpringJedisStandAloneService(new SpringJedisStandAloneConfig(properties));
     }
 
     /**
@@ -53,6 +54,7 @@ public class SpringJedisAutoConfigure {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(name = "spring.jedis.cluster.enabled", havingValue = "true")
+    @ConditionalOnJava(value = JavaVersion.EIGHT,range= ConditionalOnJava.Range.EQUAL_OR_NEWER)
     SpringJedisClusterService clusterService() {
 
         System.out.println("===========集群Bean注册至IOC===========");

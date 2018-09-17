@@ -11,14 +11,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class RedisSpringBootStarterApplicationTests {
 
+    /**
+     * Redis单机服务
+     */
     @Autowired
     SpringJedisStandAloneService service;
 
     @Test
     public void contextLoads() {
+        //第一个参数 数据库索引
+        //第二个参数 key
+        //第三个参数 value
         System.out.println(service.set(1, "test", "123"));
         System.out.println(service.exists(1, "test"));
-
         System.out.println(service.incr(2, "test"));
     }
 

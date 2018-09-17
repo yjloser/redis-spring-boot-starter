@@ -8,6 +8,7 @@ import redis.clients.jedis.Jedis;
  * @author: Mr.Yang
  * @create: 2018-06-30 21:58
  **/
+@FunctionalInterface
 public interface RedisCallback<T> {
 
     /**
@@ -20,5 +21,5 @@ public interface RedisCallback<T> {
      * @date 9:55 2018/5/11
      * @version V1.0.0
      */
-    public T call(Jedis jedis, Object params);
+      T call(Jedis jedis, Object params);
 }

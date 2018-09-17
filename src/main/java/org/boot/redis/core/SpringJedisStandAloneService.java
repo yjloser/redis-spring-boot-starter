@@ -2,15 +2,15 @@ package org.boot.redis.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
+import org.boot.redis.configure.SpringJedisStandAloneConfig;
 import org.springframework.beans.factory.DisposableBean;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,10 +21,8 @@ import java.util.Set;
  * @author: Mr.Yang
  * @create: 2018-09-17 22:53
  **/
+@Slf4j
 public class SpringJedisStandAloneService implements DisposableBean {
-
-    private static Logger logger = LogManager.getLogger(SpringJedisStandAloneService.class);
-
 
     /**
      * 连接池
@@ -33,8 +31,8 @@ public class SpringJedisStandAloneService implements DisposableBean {
     @Getter
     private JedisPool jedisPool;
 
-    public SpringJedisStandAloneService(JedisPool jedisPool) {
-        this.jedisPool = jedisPool;
+    public SpringJedisStandAloneService(SpringJedisStandAloneConfig standAloneConfig) {
+        this.jedisPool = standAloneConfig.getJedisPool();
     }
 
     /**
@@ -62,9 +60,9 @@ public class SpringJedisStandAloneService implements DisposableBean {
                 jedis.close();
             }
             jedis = getRedis();
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         } finally {
             if (jedis != null) {
                 returnRedis(jedis);
@@ -79,26 +77,12 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @param index 数据库位置
      * @author Mr.Yang
      * @date 10:38 2018/5/11
-     * @version V1.0.0
      */
     public void select(int index) {
         execute((jedis, parms) -> {
             int index1 = Integer.parseInt(((Object[]) parms)[0].toString());
             return jedis.select(index1);
         }, index);
-    }
-
-    /**
-     * 连接是否正常
-     *
-     * @param index 数据库位置
-     * @return Boolean 返回true或false
-     * @author Mr.Yang
-     * @date 10:26 2018/5/11
-     * @version V1.0.0
-     */
-    public Boolean isConnected(int index) {
-        return execute((jedis, params) -> jedis.isConnected(), index);
     }
 
     /**
@@ -109,7 +93,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return Boolean 返回true或false
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Boolean exists(int index, String key) {
         return execute((jedis, params) -> {
@@ -127,7 +110,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return Boolean 返回true或false
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Boolean hexists(int index, String mapKey, String attributeKey) {
         return execute((jedis, params) -> {
@@ -145,7 +127,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return String
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public String hget(int index, String key, String field) {
         return execute((jedis, parms) -> {
@@ -163,7 +144,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return Map 获取在哈希表中指定 key 的所有字段和值
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Map<String, String> hgetAll(int index, String key) {
         return execute((jedis, params) -> {
@@ -181,7 +161,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return long 受影响行数
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Long hdel(int index, String mapKey, String attributeKey) {
         return execute((jedis, params) -> {
@@ -201,7 +180,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回影响行
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Long hset(int index, String key, String field, String value) {
         return execute((jedis, parms) -> {
@@ -220,7 +198,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回值
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public String get(int index, String key) {
         return execute((jedis, parms) -> {
@@ -238,7 +215,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回1设置 0未设置
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Long expire(int index, String key, int seconds) {
         return execute((jedis, parms) -> {
@@ -256,17 +232,11 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return byte 二进制
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public byte[] getByte(int index, String key) {
         return execute((jedis, parms) -> {
             String key1 = ((Object[]) parms)[1].toString();
-            try {
-                return jedis.get(key1.getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage(), e);
-            }
-            return null;
+            return jedis.get(key1.getBytes(StandardCharsets.UTF_8));
         }, index, key);
     }
 
@@ -279,7 +249,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回状态码 OK
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public String set(int index, String key, String value) {
         return execute((jedis, parms) -> {
@@ -298,18 +267,12 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回状态码 OK
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public String set(int index, String key, byte[] value) {
         return execute((jedis, parms) -> {
             String key1 = ((Object[]) parms)[1].toString();
             byte[] value1 = (byte[]) ((Object[]) parms)[2];
-            try {
-                return jedis.set(key1.getBytes("UTF-8"), value1);
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage(), e);
-            }
-            return null;
+            return jedis.set(key1.getBytes(StandardCharsets.UTF_8), value1);
         }, index, key, value);
     }
 
@@ -323,7 +286,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回状态码 OK
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public String set(int index, String key, String value, int seconds) {
         return execute((jedis, parms) -> {
@@ -343,18 +305,13 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @param seconds 过期时间
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public void set(int index, String key, byte[] value, int seconds) {
         execute((jedis, parms) -> {
             String key1 = ((Object[]) parms)[1].toString();
             byte[] value1 = (byte[]) ((Object[]) parms)[2];
             String seconds1 = ((Object[]) parms)[3].toString();
-            try {
-                jedis.setex(key1.getBytes("UTF-8"), Integer.parseInt(seconds1), value1);
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage(), e);
-            }
+            jedis.setex(key1.getBytes(StandardCharsets.UTF_8), Integer.parseInt(seconds1), value1);
             return null;
         }, index, key, value, seconds);
     }
@@ -365,16 +322,15 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @param index 数据库位置
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public void setPipeLine(int index, List<RedisKVPO> list) {
         execute((jedis, parms) -> {
             Pipeline p = jedis.pipelined();
             @SuppressWarnings("unchecked")
             List<RedisKVPO> values = (List<RedisKVPO>) ((Object[]) parms)[1];
-            for (RedisKVPO po : values) {
-                p.set(po.getK(), po.getV());
-            }
+            values.forEach(v ->
+                    p.set(v.getK(), v.getV())
+            );
             p.sync();
             return null;
         }, index, list);
@@ -388,7 +344,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回删除影响行数
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public Long del(int index, String key) {
         return execute((jedis, parms) -> {
@@ -405,7 +360,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回集合长度
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public Long llen(int index, String key) {
         return execute((jedis, parms) -> {
@@ -423,7 +377,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回整个元素的数量
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public Long lpush(int index, String key, String value) {
         return execute((jedis, parms) -> {
@@ -440,16 +393,14 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @param key   key标识
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public void lpushPipeLine(int index, String key, List<String> values) {
         execute((RedisCallback<String>) (jedis, parms) -> {
             String key1 = ((Object[]) parms)[1].toString();
+            @SuppressWarnings("unchecked")
             List<String> values1 = (List<String>) ((Object[]) parms)[2];
             Pipeline p = jedis.pipelined();
-            for (String value : values1) {
-                p.lpush(key1, value);
-            }
+            values1.forEach(value -> p.lpush(key1, value));
             p.sync();
             return null;
         }, index, key, values);
@@ -465,7 +416,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return List集合
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public List<String> lrange(int index, String key, long start, long end) {
         return execute((jedis, parms) -> {
@@ -485,7 +435,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回自增值
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public Long incr(int index, String key) {
         return execute((jedis, parms) -> {
@@ -503,7 +452,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return 返回插入影响行数
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public Long sadd(int index, String key, String value) {
         return execute((jedis, parms) -> {
@@ -521,7 +469,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return Set集合
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public Set<String> smembers(int index, String key) {
         return execute((jedis, parms) -> {
@@ -539,7 +486,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return List列表
      * @author Mr.Yang
      * @date 10:11 2018/5/11
-     * @version V1.0.0
      */
     public List<String> brpop(int index, String key) {
         return execute((jedis, parms) -> {
@@ -558,13 +504,12 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @param value 自增步长
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Long hincrby(int index, String key, String field, long value) {
         return execute((jedis, parms) -> {
             String key1 = ((Object[]) parms)[1].toString();
             String field1 = ((Object[]) parms)[2].toString();
-            Long value1 = Long.valueOf(((Object[]) parms)[3].toString());
+            long value1 = Long.valueOf(((Object[]) parms)[3].toString());
             return jedis.hincrBy(key1, field1, value1);
         }, index, key, field, value);
     }
@@ -578,7 +523,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return String 返回旧值
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Long incrBy(int index, String key, long value) {
         return execute((jedis, parms) -> {
@@ -597,7 +541,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @return String 返回旧值
      * @author Mr.Yang
      * @date 10:26 2018/5/11
-     * @version V1.0.0
      */
     public Long decrBy(int index, String key, long value) {
         return execute((jedis, parms) -> {
