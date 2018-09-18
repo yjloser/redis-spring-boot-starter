@@ -16,19 +16,23 @@ public class RedisSpringBootStarterApplicationTests {
      * Redis单机服务
      */
     @Autowired
+    SpringJedisClusterService clusterService;
+
+    /**
+     * Redis单机服务
+     */
+    @Autowired
     SpringJedisStandAloneService standAloneService;
+
 
     @Test
     public void contextLoads() {
-        //单机版本操作
-        //第一个参数 数据库索引
-        //第二个参数 key
-        //第三个参数 value
+        //单机redis
+        new Thread(() -> System.out.println(standAloneService.set(0, "test1", "123"))).start();
+        new Thread(() -> System.out.println(standAloneService.exists(0, "test2"))).start();
+        //集群redis
+        new Thread(() -> System.out.println(clusterService.exists("test"))).start();
 
-
-        new Thread(()-> System.out.println(standAloneService.exists(1, "test"))).start();
-
-        new Thread(()-> System.out.println(standAloneService.exists(1, "test"))).start();
     }
 
 }

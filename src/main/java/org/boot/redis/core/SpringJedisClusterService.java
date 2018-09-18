@@ -1,11 +1,11 @@
 package org.boot.redis.core;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.boot.redis.configure.SpringJedisClusterConfig;
-import org.springframework.beans.factory.DisposableBean;
+import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.Set;
 
 /**
  * @program: redis-spring-boot-starter
@@ -14,21 +14,10 @@ import redis.clients.jedis.JedisCluster;
  * @create: 2018-09-18 00:33
  **/
 @Slf4j
-public class SpringJedisClusterService implements DisposableBean {
+public class SpringJedisClusterService extends JedisCluster {
 
-    /**
-     * 连接池
-     **/
-    @Setter
-    @Getter
-    private JedisCluster jedisPool;
 
-    public SpringJedisClusterService(SpringJedisClusterConfig jedisClusterConfig) {
-        this.jedisPool = jedisClusterConfig;
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        jedisPool.close();
+    public SpringJedisClusterService(Set<HostAndPort> nodes, JedisPoolConfig config) {
+        super(nodes, config);
     }
 }

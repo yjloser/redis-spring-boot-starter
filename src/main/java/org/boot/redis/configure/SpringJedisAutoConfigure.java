@@ -91,6 +91,6 @@ public class SpringJedisAutoConfigure {
         config.setMaxIdle(properties.getMinIdle());
         config.setTestOnBorrow(properties.isTestOnBorrow());
         //集群配置
-        return new SpringJedisClusterService(new SpringJedisClusterConfig(nodes, config));
+        return new SpringJedisClusterService(nodes, config);
     }
 }
