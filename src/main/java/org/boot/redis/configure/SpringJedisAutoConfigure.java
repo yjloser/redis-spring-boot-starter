@@ -42,7 +42,7 @@ public class SpringJedisAutoConfigure {
     /**
      * 分隔符
      */
-    String CONFIG_LOCATION_DELIMITERS = ":,; \t\n";
+    private final String CONFIG_LOCATION_DELIMITERS = ":,; \t\n";
 
 
     /**
