@@ -58,5 +58,6 @@ redis-spring-boot-starter
 ## 关于Redis集群，如只是部署在本地测试,直接使用docker拉取镜像更加方便！
 （注意！！当前Redis集群要和代码在同一台服务器中，当前容器创建集群时使用127.0.0.1地址）  
 
-拉取镜像 docker pull tommy351/redis-cluster
+拉取镜像 docker pull tommy351/redis-cluster  
+
 启动容器 docker run -p 7000:7000 -p 7001:7001 -p 7002:7002 -p 7003:7003 -p 7004:7004 -p 7005:7005 tommy351/redis-cluster:3.2
