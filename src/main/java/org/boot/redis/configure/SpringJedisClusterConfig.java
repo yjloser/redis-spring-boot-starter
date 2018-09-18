@@ -25,6 +25,4 @@ public class SpringJedisClusterConfig extends JedisCluster {
     public SpringJedisClusterConfig(Set<HostAndPort> nodes, GenericObjectPoolConfig poolConfig) {
         super(nodes,poolConfig);
     }
-
-
 }
