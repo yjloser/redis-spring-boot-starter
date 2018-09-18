@@ -306,13 +306,12 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @author Mr.Yang
      * @date 10:11 2018/5/11
      */
-    public void set(int index, String key, byte[] value, int seconds) {
-        execute((jedis, parms) -> {
+    public String set(int index, String key, byte[] value, int seconds) {
+        return execute((jedis, parms) -> {
             String key1 = ((Object[]) parms)[1].toString();
             byte[] value1 = (byte[]) ((Object[]) parms)[2];
             String seconds1 = ((Object[]) parms)[3].toString();
-            jedis.setex(key1.getBytes(StandardCharsets.UTF_8), Integer.parseInt(seconds1), value1);
-            return null;
+            return   jedis.setex(key1.getBytes(StandardCharsets.UTF_8), Integer.parseInt(seconds1), value1);
         }, index, key, value, seconds);
     }
 
