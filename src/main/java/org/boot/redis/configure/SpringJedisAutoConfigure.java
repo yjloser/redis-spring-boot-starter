@@ -33,8 +33,16 @@ import java.util.Set;
 @EnableConfigurationProperties(SpringJedisProperties.class)
 public class SpringJedisAutoConfigure {
 
+    /**
+     * jedis资源
+     */
     @Autowired
     private SpringJedisProperties properties;
+
+    /**
+     * 分隔符
+     */
+    String CONFIG_LOCATION_DELIMITERS = ":,; \t\n";
 
 
     /**
@@ -71,7 +79,7 @@ public class SpringJedisAutoConfigure {
         //循环处理
         properties.getNodes().forEach(node -> {
             //冒号分割
-            String[] nodeArray = StringUtils.tokenizeToStringArray(node, ":,; \t\n");
+            String[] nodeArray = StringUtils.tokenizeToStringArray(node, CONFIG_LOCATION_DELIMITERS);
             //加入节点
             nodes.add(new HostAndPort(nodeArray[0], Integer.valueOf(nodeArray[1])));
         });
