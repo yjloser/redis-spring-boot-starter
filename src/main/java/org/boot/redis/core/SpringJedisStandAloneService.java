@@ -46,8 +46,8 @@ public class SpringJedisStandAloneService implements DisposableBean {
      */
     private <T> T execute(RedisCallback<T> callback, Object... args) {
         Jedis jedis = null;
+        Object index = args[0];
         try {
-            Object index = args[0];
             // 0-15号库
             if (null != index && Integer.parseInt(index.toString()) > 0 && Integer.parseInt(index.toString()) < 16) {
                 jedis = getRedis(Integer.parseInt(index.toString()));
@@ -56,19 +56,18 @@ public class SpringJedisStandAloneService implements DisposableBean {
             }
             return callback.call(jedis, args);
         } catch (JedisConnectionException e) {
+            log.error(e.getMessage(), e);
             if (jedis != null) {
                 jedis.close();
             }
-            jedis = getRedis();
-            log.error(e.getMessage(), e);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            //重新获取链接，重试一次。（网络抖动问题）
+            jedis = getRedis(Integer.parseInt(index.toString()));
+            return callback.call(jedis, args);
         } finally {
             if (jedis != null) {
                 returnRedis(jedis);
             }
         }
-        return null;
     }
 
     /**
@@ -311,7 +310,7 @@ public class SpringJedisStandAloneService implements DisposableBean {
             String key1 = ((Object[]) parms)[1].toString();
             byte[] value1 = (byte[]) ((Object[]) parms)[2];
             String seconds1 = ((Object[]) parms)[3].toString();
-            return   jedis.setex(key1.getBytes(StandardCharsets.UTF_8), Integer.parseInt(seconds1), value1);
+            return jedis.setex(key1.getBytes(StandardCharsets.UTF_8), Integer.parseInt(seconds1), value1);
         }, index, key, value, seconds);
     }
 
