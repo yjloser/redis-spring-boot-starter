@@ -286,7 +286,7 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @author Mr.Yang
      * @date 10:11 2018/5/11
      */
-    public String set(int index, String key, String value, int seconds) {
+    public String setex(int index, String key, String value, int seconds) {
         return execute((jedis, parms) -> {
             String key1 = ((Object[]) parms)[1].toString();
             String value1 = ((Object[]) parms)[2].toString();
@@ -305,7 +305,7 @@ public class SpringJedisStandAloneService implements DisposableBean {
      * @author Mr.Yang
      * @date 10:11 2018/5/11
      */
-    public String set(int index, String key, byte[] value, int seconds) {
+    public String setex(int index, String key, byte[] value, int seconds) {
         return execute((jedis, parms) -> {
             String key1 = ((Object[]) parms)[1].toString();
             byte[] value1 = (byte[]) ((Object[]) parms)[2];
