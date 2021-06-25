@@ -548,6 +548,23 @@ public class SpringJedisStandAloneService implements DisposableBean {
         }, index, key, value);
     }
 
+    /**
+     * 返回缓存中模糊匹配的key
+     *
+     * @param index 数据库位置
+     * @param key   key标识
+     * @return Set集合
+     * @author Mr.Yang
+     * @date 10:11 2018/5/11
+     */
+    public Set<String> keys(int index, String key) {
+        return execute((jedis, parms) -> {
+            Object[] ps = ((Object[]) parms);
+            String key1 = ps[1].toString();
+            return jedis.keys(key1);
+        }, index, key);
+    }
+
 
     /**
      * 关闭服务时，自动销毁
