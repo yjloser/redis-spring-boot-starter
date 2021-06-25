@@ -5,7 +5,7 @@
 
 	<groupId>org.boot.redis</groupId>
 	<artifactId>redis-spring-boot-starter</artifactId>
-	<version>1.0.1-RELEASE</version>
+	<version>1.0.1.RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>redis-spring-boot-starter</name>
@@ -58,7 +58,13 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	<distributionManagement>
+		<repository>
+			<id>city-repository</id>
+			<name>city Repository</name>
+			<url>http://10.2.14.202:8090/repository/city-repository/</url>
+		</repository>
+	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>

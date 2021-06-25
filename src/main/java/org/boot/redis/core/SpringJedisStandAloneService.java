@@ -87,6 +87,18 @@ public class SpringJedisStandAloneService implements DisposableBean {
     /**
      * 查看 key 中，指定的字段是否存在。
      *
+     * @param key key标识
+     * @return Boolean 返回true或false
+     * @author Mr.Yang
+     * @date 10:26 2018/5/11
+     */
+    public Boolean exists(String key) {
+        return exists(0, key);
+    }
+
+    /**
+     * 查看 key 中，指定的字段是否存在。
+     *
      * @param index 数据库位置
      * @param key   key标识
      * @return Boolean 返回true或false
@@ -98,6 +110,19 @@ public class SpringJedisStandAloneService implements DisposableBean {
             String key1 = ((Object[]) params)[1].toString();
             return jedis.exists(key1);
         }, index, key);
+    }
+
+    /**
+     * 查看哈希表 key 中，指定的字段是否存在。
+     *
+     * @param mapKey       key标识
+     * @param attributeKey 成员字段
+     * @return Boolean 返回true或false
+     * @author Mr.Yang
+     * @date 10:26 2018/5/11
+     */
+    public Boolean hexists(String mapKey, String attributeKey) {
+        return hexists(0, mapKey, attributeKey);
     }
 
     /**
@@ -121,7 +146,21 @@ public class SpringJedisStandAloneService implements DisposableBean {
     /**
      * 通过Hash（哈希），获取存储在哈希表中指定字段的值。
      *
+     * @param key   key
+     * @param field 成员字段
+     * @return String
+     * @author Mr.Yang
+     * @date 10:26 2018/5/11
+     */
+    public String hget(String key, String field) {
+        return hget(0, key, field);
+    }
+
+    /**
+     * 通过Hash（哈希），获取存储在哈希表中指定字段的值。
+     *
      * @param index 数据库位置
+     * @param key   key
      * @param field 成员字段
      * @return String
      * @author Mr.Yang
@@ -133,6 +172,18 @@ public class SpringJedisStandAloneService implements DisposableBean {
             String field1 = ((Object[]) parms)[2].toString();
             return jedis.hget(key1, field1);
         }, index, key, field);
+    }
+
+    /**
+     * 通过Hash（哈希），获取在哈希表中指定 key 的所有字段和值
+     *
+     * @param key key标识
+     * @return Map 获取在哈希表中指定 key 的所有字段和值
+     * @author Mr.Yang
+     * @date 10:26 2018/5/11
+     */
+    public Map<String, String> hgetAll(String key) {
+        return hgetAll(0, key);
     }
 
     /**
@@ -172,6 +223,20 @@ public class SpringJedisStandAloneService implements DisposableBean {
     /**
      * 通过Hash（哈希），获取值
      *
+     * @param key   key标识
+     * @param field 成员字段
+     * @param value 值
+     * @return 返回影响行
+     * @author Mr.Yang
+     * @date 10:26 2018/5/11
+     */
+    public Long hset(String key, String field, String value) {
+        return hset(0, key, field, value);
+    }
+
+    /**
+     * 通过Hash（哈希），获取值
+     *
      * @param index 数据库位置
      * @param key   key标识
      * @param field 成员字段
@@ -192,6 +257,18 @@ public class SpringJedisStandAloneService implements DisposableBean {
     /**
      * 通过key（字符串），获取值
      *
+     * @param key key标识
+     * @return 返回值
+     * @author Mr.Yang
+     * @date 10:26 2018/5/11
+     */
+    public String get(String key) {
+        return get(0, key);
+    }
+
+    /**
+     * 通过key（字符串），获取值
+     *
      * @param index 数据库位置
      * @param key   key标识
      * @return 返回值
@@ -203,6 +280,19 @@ public class SpringJedisStandAloneService implements DisposableBean {
             String key1 = ((Object[]) parms)[1].toString();
             return jedis.get(key1);
         }, index, key);
+    }
+
+    /**
+     * 设置key的过期时间
+     *
+     * @param key     key标识
+     * @param seconds 过期时间
+     * @return 返回1设置 0未设置
+     * @author Mr.Yang
+     * @date 10:26 2018/5/11
+     */
+    public Long expire(String key, int seconds) {
+        return expire(0, key, seconds);
     }
 
     /**
@@ -237,6 +327,20 @@ public class SpringJedisStandAloneService implements DisposableBean {
             String key1 = ((Object[]) parms)[1].toString();
             return jedis.get(key1.getBytes(StandardCharsets.UTF_8));
         }, index, key);
+    }
+
+
+    /**
+     * 设置key（字符串）赋值
+     *
+     * @param key   key标识
+     * @param value 值
+     * @return 返回状态码 OK
+     * @author Mr.Yang
+     * @date 10:11 2018/5/11
+     */
+    public String set(String key, String value) {
+        return set(0, key, value);
     }
 
     /**
@@ -337,6 +441,18 @@ public class SpringJedisStandAloneService implements DisposableBean {
     /**
      * 根据key删除
      *
+     * @param key key标识
+     * @return 返回删除影响行数
+     * @author Mr.Yang
+     * @date 10:11 2018/5/11
+     */
+    public Long del(String key) {
+        return del(0, key);
+    }
+
+    /**
+     * 根据key删除
+     *
      * @param index 数据库位置
      * @param key   key标识
      * @return 返回删除影响行数
@@ -369,6 +485,19 @@ public class SpringJedisStandAloneService implements DisposableBean {
     /**
      * 将一个或多个值插入到列表头部
      *
+     * @param key   key标识
+     * @param value 值
+     * @return 返回整个元素的数量
+     * @author Mr.Yang
+     * @date 10:11 2018/5/11
+     */
+    public Long lpush(String key, String value) {
+        return lpush(0, key, value);
+    }
+
+    /**
+     * 将一个或多个值插入到列表头部
+     *
      * @param index 数据库位置
      * @param key   key标识
      * @param value 值
@@ -382,6 +511,17 @@ public class SpringJedisStandAloneService implements DisposableBean {
             String value1 = ((Object[]) parms)[2].toString();
             return jedis.lpush(key1, value1);
         }, index, key, value);
+    }
+
+    /**
+     * List列表key，一次命令新增
+     *
+     * @param key key标识
+     * @author Mr.Yang
+     * @date 10:11 2018/5/11
+     */
+    public void lpushPipeLine(String key, List<String> values) {
+        lpushPipeLine(0, key, values);
     }
 
     /**
@@ -549,6 +689,78 @@ public class SpringJedisStandAloneService implements DisposableBean {
     }
 
     /**
+     * 将一个或多个值插入到列表头部 默认0号库
+     *
+     * @param key   key标识
+     * @param value 值
+     * @author yjian
+     * @date 10:11 2018/5/11
+     * @version V1.0.0
+     */
+    public Long listPush(String key, String value) {
+        return execute((jedis, parms) -> {
+            String key1 = ((Object[]) parms)[1].toString();
+            String value1 = ((Object[]) parms)[2].toString();
+            return jedis.lpush(key1, value1);
+        }, 0, key, value);
+    }
+
+
+    /**
+     * 将一个或多个值插入到列表头部
+     *
+     * @param index 数据库位置
+     * @param key   key标识
+     * @param value 值
+     * @author yjian
+     * @date 10:11 2018/5/11
+     * @version V1.0.0
+     */
+    public Long listPush(int index, String key, String value) {
+        return execute((jedis, parms) -> {
+            String key1 = ((Object[]) parms)[1].toString();
+            String value1 = ((Object[]) parms)[2].toString();
+            return jedis.lpush(key1, value1);
+        }, index, key, value);
+    }
+
+
+    /**
+     * 设置key(字符串)过期时间（单位：秒）
+     *
+     * @param key     key标识
+     * @param value   值
+     * @param seconds 过期时间
+     * @author yjian
+     * @date 10:11 2018/5/11
+     * @version V1.0.0
+     */
+    public String set(String key, String value, int seconds) {
+        return set(0, key, value, seconds);
+    }
+
+    /**
+     * 设置key(字符串)过期时间（单位：秒）
+     *
+     * @param index   数据库位置
+     * @param key     key标识
+     * @param value   值
+     * @param seconds 过期时间
+     * @author yjian
+     * @date 10:11 2018/5/11
+     * @version V1.0.0
+     */
+    public String set(int index, String key, String value, int seconds) {
+        return execute((jedis, parms) -> {
+            String key1 = ((Object[]) parms)[1].toString();
+            String value1 = ((Object[]) parms)[2].toString();
+            String seconds1 = ((Object[]) parms)[3].toString();
+            return jedis.setex(key1, Integer.parseInt(seconds1), value1);
+
+        }, index, key, value, seconds);
+    }
+
+    /**
      * 返回缓存中模糊匹配的key
      *
      * @param index 数据库位置
@@ -564,7 +776,6 @@ public class SpringJedisStandAloneService implements DisposableBean {
             return jedis.keys(key1);
         }, index, key);
     }
-
 
     /**
      * 关闭服务时，自动销毁
